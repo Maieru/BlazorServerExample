@@ -11,9 +11,9 @@ namespace Bussiness.Repository.StudentRepository
     {
         Task<IEnumerable<Student>> GetAll();
         Task<Student> GetById(int id);
-        Task Insert(Student student);
-        Task Update(Student student);
-        Task Delete(int id);
+        Task<int> Insert(Student student);
+        Task<int> Update(Student student);
+        Task<int> Delete(int id);
         Task<int> GetNextId();
     }
 }

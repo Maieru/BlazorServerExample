@@ -19,23 +19,23 @@ namespace Bussiness.Repository.StudentRepository
 
         public async Task<Student> GetById(int id) => await _context.Students.FindAsync(id);
 
-        public async Task Insert(Student student)
+        public async Task<int> Insert(Student student)
         {
             _context.Students.Add(student);
-            await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync();
         }
 
-        public async Task Update(Student student)
+        public async Task<int> Update(Student student)
         {
             _context.Students.Update(student);
-            await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync();
         }
 
-        public async Task Delete(int id)
+        public async Task<int> Delete(int id)
         {
             var student = await GetById(id);
             _context.Students.Remove(student);
-            await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync();
         }
 
         public async Task<int> GetNextId() => await _context.Students.MaxAsync(x => x.Id) + 1;

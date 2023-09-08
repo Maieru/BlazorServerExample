@@ -1,0 +1,83 @@
+﻿@page "/ListStudent"
+@using Bussiness.Repository.StudentRepository;
+
+@inject IStudentRepository StudentRepository
+<h3>Student List</h3>
+
+<div class="row">
+    <div class="col-md-6">
+        <a href='/student/add' class="btn btn-primary" role="button">
+            <i class="fas fa-user-plus"></i>
+            Add Student
+        </a>
+    </div>
+    <div class="input-group col">
+        <input type="text" class="form-control" placeholder="Search student by name"
+        @bind="SearchString" @bind:event="oninput" @onkeyup="FilterUser" />
+        @if (SearchString.Length > 0)
+        {
+            <div class="input-group-append">
+                <button class="btn btn-danger" @onclick="ResetSearch">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        }
+    </div>
+</div>
+<br />
+
+<table class="table table-striped align-middle table-bordered">
+    <thead class="table-success">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var student in studentsFiltered)
+        {
+            <tr>
+                <td>@student.Id</td>
+                <td>@student.Name</td>
+                <td>
+                    <a href='/student/edit/@student.Id' class="btn btn-outline-dark" role="button">
+                        Edit
+                    </a>
+                    <a href='/student/delete/@student.Id' class="btn btn-outline-danger" role="button">
+                        Delete
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    protected List<Student> students = new();
+    protected List<Student> studentsFiltered = new();
+
+    protected string SearchString { get; set; } = string.Empty;
+
+    protected override async Task OnInitializedAsync() => await GetStudent();
+
+    protected async Task GetStudent()
+    {
+        students = await Http.GetFromJsonAsync<List<Student>>("api/Student");
+        studentsFiltered = students;
+    }
+
+    protected void FilterUser()
+    {
+        if (!string.IsNullOrEmpty(SearchString))
+            studentsFiltered = students.Where(x => x.Name.Contains(SearchString)).ToList();
+        else
+            studentsFiltered = students;
+    }
+
+    public void ResetSearch()
+    {
+        SearchString = string.Empty;
+        FilterUser();
+    }
+}

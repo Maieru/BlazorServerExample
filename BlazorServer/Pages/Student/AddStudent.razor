@@ -1,0 +1,64 @@
+﻿@page "/student/add";
+@page "/student/edit/{id:int}";
+
+<h1>@Title User</h1>
+
+<hr />
+<EditForm Model="@student" OnValidSubmit="SaveStudent">
+    <DataAnnotationsValidator />
+
+    <div class="mb-3">
+        <label for="Id" class="form-label">Id</label>
+        <div class="col-md-4">
+            <InputNumber class="form-control" readonly="@isEdit" @bind-Value="student.Id" />
+        </div>
+        <ValidationMessage For="@(() => student.Id)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="Name" class="form-label">Name</label>
+        <div class="col-md-4">
+            <InputText class="form-control" @bind-Value="student.Name" />
+        </div>
+        <ValidationMessage For="@(() => student.Name)" />
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button class="btn btn-light" @onclick="Return">Return</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+
+    protected string Title = "Add";
+    protected Student student = new();
+    protected bool isEdit = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (id != 0)
+        {
+            Title = "Edit";
+            isEdit = true;
+            student = await Http.GetFromJsonAsync<Student>("api/Student/" + id);
+            return;
+        }
+
+        student.Id = await Http.GetFromJsonAsync<int>("api/Student/GetNextId");
+    }
+
+    protected async Task SaveStudent()
+    {
+        if (isEdit)
+            await Http.PutAsJsonAsync("api/Student", student);
+
+        await Http.PostAsJsonAsync("api/Student", student);
+
+        Return();
+    }
+
+    protected void Return() => NavigationManager.NavigateTo("/listStudent");
+}

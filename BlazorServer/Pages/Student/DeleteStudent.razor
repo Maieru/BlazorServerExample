@@ -1,0 +1,44 @@
+﻿@page "/student/delete/{id:int}"
+
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+
+<h2>Delete Student</h2>
+<br />
+<div class="form-group">
+    <h4>Do you want to delete this student?</h4>
+    <table class="table">
+        <tbody>
+            <tr>
+                <td>Id</td>
+                <td>@student.Id</td>
+            </tr>
+            <tr>
+                <td>Name</td>
+                <td>@student.Name</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="form-group">
+    <input type="submit" value="Delete" @onclick="(async () => await RemoveStudent(student.Id))" class="btn btn-danger" />
+    <input type="submit" value="Cancel" @onclick="(() => Return())" class="btn btn-warning" />
+</div>
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+
+    Student student = new Student();
+
+    protected override async Task OnInitializedAsync() => student = await Http.GetFromJsonAsync<Student>("/api/student/" + id);
+
+    protected async Task RemoveStudent(int userID)
+    {
+        await Http.DeleteAsync("api/student/" + userID);
+        Return();
+    }
+
+    void Return() => NavigationManager.NavigateTo("/ListStudent");
+}

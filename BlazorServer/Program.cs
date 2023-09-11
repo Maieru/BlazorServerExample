@@ -19,7 +19,7 @@ builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(build
 builder.Services.AddDbContextFactory<SchoolContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("SchoolDatabase")));
 
 // Adds a scoped Repository. All repository needs to be added this way.
-builder.Services.AddScoped<IStudentRepository,  StudentRepository>();
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 
 var app = builder.Build();
 
